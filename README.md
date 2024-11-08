@@ -34,7 +34,7 @@ sudo apt -y install php8.3 php8.3-{common,cli,gd,mysql,mbstring,bcmath,xml,fpm,c
 ### 4. Setup Oracle VPS
 
 #### Configuration
-- **Image**: Canonical Ubuntu 24.05
+- **Image**: Canonical Ubuntu 24.04
 - **Shape**: Ampere VM.Standard.A1.Flex
   - 2 cores
   - 12GB Memory
@@ -232,10 +232,10 @@ Your Wireguard IP is always your primary allocation if you want other users to a
 
 #### 5.8 Making A and SRV DNS Records to Use Domain to Join the Server
 
-A Record: Name -> mc (or something else you want) IPv4 Address -> Public IP of VPS
-SRV Record: _minecraft._tcp.mc - 10 - 10 - 25565 - mc.domain.com (If Following Above)
+##### A Record: Name -> mc (or something else you want) | IPv4 Address -> Public IP of VPS
+##### SRV Record: _minecraft._tcp.mc - 10 - 10 - 25565 - mc.domain.com (If Following Above)
 
-### 6. Additional Configuration
+### 6. Where to Get new eggs and How to Proxy UDP (Project Zomboid used as an example)
 
 #### 6.1 Download and Add new eggs
 
@@ -244,11 +244,12 @@ Current github repository for eggs: [https://github.com/pelican-eggs](https://gi
 #### 6.2 Setup New Ingress Rules for New Ports and Configure Caddy and UFW to use them:
 
 ```bash
-ufw allow 16261 && ufw allow 16262 (If Using Project Zomboid as in the Example)
+ufw allow 16261 && ufw allow 16262
 nano /etc/caddy/Caddyfile
 ```
 
 (Replace "port" with your UDP port)
+
 ```
 udp/:port {
     route {
