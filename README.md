@@ -1,6 +1,5 @@
-# 🐦 Pelican Panel Setup Guide
-
-A comprehensive guide for setting up Pelican Panel with Oracle Cloud Infrastructure and Cloudflare.
+# DIY Game Server Setup
+A comprehensive guide for setting up a DIY Game Server using Pelican Panel with Oracle Cloud and Cloudflare.
 
 ## 📋 Prerequisites
 
@@ -64,14 +63,14 @@ chmod +x wireguard-install.sh
 
 ##### 4.1.4 Install and Setup Caddy-l4
 
-###### Install xcaddy Dependencies
+###### Install Dependencies for xcaddy
 ```bash
 sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
 
-# Add GPG key
+# Add xcaddy GPG key for secure package downloads:
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-xcaddy-archive-keyring.gpg 
 
-# Add repository
+# Add the xcaddy repository to the system's sources list:
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-xcaddy.list 
 
 # Install xcaddy
@@ -79,30 +78,33 @@ apt update -y
 apt install -y xcaddy
 ```
 
-###### Install Go
+###### Download and Extract go (Check if Version is Up-to-Date)
 ```bash
 wget https://go.dev/dl/go1.23.3.linux-arm64.tar.gz
 tar -C /usr/local -xzf go1.23.3.linux-arm64.tar.gz  
 
-# Add Go to PATH
+# Add Go to your system's PATH to make it accessible from any directory
 export PATH=$PATH:/usr/local/go/bin
+
+# Apply the PATH changes by sourcing your profile:
 source ~/.profile
 
-# Verify installation
-go version
+# Check if go was installed successfully
+go version 
 ```
 
-###### Build and Configure Caddy-l4
+###### Install Caddy-l4
 ```bash
 xcaddy build --with github.com/mholt/caddy-l4
 mv caddy /usr/local/bin/
 caddy -v 
 
-# Setup configuration directory
+# Setup Caddy-l4
 mkdir -p /etc/caddy
+nano /etc/caddy/Caddyfile
 ```
 
-Create Caddyfile (`/etc/caddy/Caddyfile`):
+Add to Caddyfile:
 ```
 {
     layer4 {
@@ -117,7 +119,12 @@ Create Caddyfile (`/etc/caddy/Caddyfile`):
 }
 ```
 
-Create systemd service (`/etc/systemd/system/caddy.service`):
+```bash
+caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+nano /etc/systemd/system/caddy.service
+```
+
+Add to caddy.service:
 ```ini
 [Unit]
 Description=Caddy web server
@@ -136,7 +143,6 @@ LimitNPROC=512
 WantedBy=multi-user.target
 ```
 
-Enable and start Caddy:
 ```bash
 systemctl daemon-reload
 systemctl enable caddy
@@ -144,13 +150,29 @@ systemctl start caddy
 systemctl status caddy
 ```
 
+##### 4.1.5 Going Back to Home Directory if Necessary 
+```bash
+cd /home/ubuntu
+```
+
+##### 4.1.6 Open Wireguard Client Configuration File
+```bash
+ls
+nano wg0-"your config name here".conf
+```
+
 ### 5. Setup Pelican VM
 
-#### 5.1 Connect to Wireguard Tunnel
+#### 5.1 Connect to the Wireguard Tunnel
+```bash
+sudo nano /etc/wireguard/wg0.conf
+```
+(copy and paste in the configuration in the VPS)
+```bash
+sudo nano /etc/systemd/system/wg-quick@.service
+```
 
-Create configuration file (`/etc/wireguard/wg0.conf`) and add your VPS configuration.
-
-Create systemd service (`/etc/systemd/system/wg-quick@.service`):
+Add to wg-quick@.service:
 ```ini
 [Unit]
 Description=WireGuard via wg-quick(8) for %I
@@ -167,7 +189,6 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-Enable and start Wireguard:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable wg-quick@wg0.service
@@ -175,47 +196,71 @@ sudo systemctl start wg-quick@wg0.service
 sudo systemctl status wg-quick@wg0.service
 ```
 
-#### 5.2 Setup SSL Certificates
+#### 5.2 Making Certificates for Panel
 ```bash
 sudo apt install -y python3-certbot-nginx
 sudo certbot -d example.com --manual --preferred-challenges dns certonly
-
-# Add auto-renewal cron job
 sudo crontab -e
-# Add: 0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx"
+0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx"
 ```
 
-#### 5.3 Install Pelican Panel
-Follow the official documentation at [pelican.dev/docs](https://pelican.dev/docs)
+#### 5.3 Installing Pelican Panel
+
+This step requires you to follow the documentation here: [https://pelican.dev/docs](https://pelican.dev/docs) along with the video.
 
 #### 5.4 Setup Cloudflare Tunnel
-Use the curl command provided in your Cloudflare Dashboard. Use the domain from step 5.2 as your Origin Server Name.
 
-#### 5.5 Apply Configuration
-Reboot both machines:
+Use sudo with the curl command given in the Cloudflare Dashboard `sudo curl -L --output cloudflared.dev [...]`
+Origin Server Name is the domain you used to make the certificates in #5.2
+
+#### 5.5 Reboot both Machines to Apply Pending Configurations
 ```bash
-# On VPS
+# VPS
 reboot
 
-# On VM
+# VM
 sudo reboot
 ```
 
+#### 5.6 Install Pelican Wings and Making Node
+
+This step requires you to follow the documentation here: [https://pelican.dev/docs](https://pelican.dev/docs) along with the video.
+
+#### 5.7 Making and Trying first Server (Minecraft)
+
+Your Wireguard IP is always your primary allocation if you want other users to access your server. You can add your local IP as an additional allocation for local access if you want to.
+
+#### 5.8 Making A and SRV DNS Records to Use Domain to Join the Server
+
+A Record: Name -> mc (or something else you want) IPv4 Address -> Public IP of VPS
+SRV Record: _minecraft._tcp.mc - 10 - 10 - 25565 - mc.domain.com (If Following Above)
+
 ### 6. Additional Configuration
 
-#### 6.1 Adding New Eggs
-Get new eggs from: [pelican-eggs GitHub repository](https://github.com/pelican-eggs)
+#### 6.1 Download and Add new eggs
 
-#### 6.2 Configure UDP Ports
+Current github repository for eggs: [https://github.com/pelican-eggs](https://github.com/pelican-eggs)
 
-Example configuration for Project Zomboid:
+#### 6.2 Setup New Ingress Rules for New Ports and Configure Caddy and UFW to use them:
 
 ```bash
-# Allow new ports in UFW
-ufw allow 16261 && ufw allow 16262
+ufw allow 16261 && ufw allow 16262 (If Using Project Zomboid as in the Example)
+nano /etc/caddy/Caddyfile
 ```
 
-Update Caddyfile (`/etc/caddy/Caddyfile`):
+(Replace "port" with your UDP port)
+```
+udp/:port {
+    route {
+        proxy {
+            upstream udp/10.66.66.2:port
+        }
+    }
+}
+```
+
+Below is how the complete config would look like:
+
 ```
 {
     layer4 {
@@ -246,24 +291,4 @@ Update Caddyfile (`/etc/caddy/Caddyfile`):
 }
 ```
 
-### 🔧 DNS Configuration
-
-To use a domain for server access:
-
-1. Create A Record:
-   - Name: `mc` (or your preference)
-   - IPv4 Address: VPS Public IP
-
-2. Create SRV Record:
-   - Name: `_minecraft._tcp.mc`
-   - Priority: 10
-   - Weight: 10
-   - Port: 25565
-   - Target: `mc.domain.com`
-
----
-
-## 📝 Notes
-- Wireguard IP is your primary allocation for external access
-- Local IP can be added as an additional allocation for local access
-- Remember to reboot both machines after major configuration changes
+Finally, reboot both machines once again.
