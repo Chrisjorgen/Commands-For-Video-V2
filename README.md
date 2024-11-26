@@ -5,7 +5,7 @@ A comprehensive guide for setting up a DIY Game Server using Pelican Panel with 
 
 - A server to install the panel on
 - A domain registered in Cloudflare
-- An Oracle Account (preferably Pay as You Go) [Terms Of Service for Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
+- An Oracle Account (preferably Pay as You Go) [Documentation for Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
 
 > **Note**: Some commands may require `sudo`. Use it whenever applicable to your situation.
 
