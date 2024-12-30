@@ -23,7 +23,7 @@ Download from: [Ubuntu Server Download Page](https://ubuntu.com/download/server)
 
 #### 3.1 Update VM
 ```bash
-sudo apt upgrade -y && sudo apt update -y
+sudo apt update -y && sudo apt upgrade -y
 ```
 
 #### 3.2 Install Panel Dependencies
