@@ -25,10 +25,17 @@ Download from: [Ubuntu Server Download Page](https://ubuntu.com/download/server)
 ```bash
 sudo apt update -y && sudo apt upgrade -y
 ```
+#### Add php8.4 repository
+
+##### Ubuntu
+```bash
+sudo LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php 
+sudo apt update
+```
 
 #### 3.2 Install Panel Dependencies
 ```bash
-sudo apt -y install php8.3 php8.3-{common,cli,gd,mysql,mbstring,bcmath,xml,fpm,curl,zip,intl,sqlite3} mariadb-server nginx tar unzip git netcat-openbsd resolvconf wireguard
+sudo apt -y install php8.4 php8.4-{common,cli,gd,mysql,mbstring,bcmath,xml,fpm,curl,zip,intl,sqlite3} mariadb-server nginx tar unzip git netcat-openbsd resolvconf wireguard
 ```
 
 ### 4. Setup Oracle VPS
