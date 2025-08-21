@@ -248,7 +248,7 @@ Your Wireguard IP is always your primary allocation if you want other users to a
 
 Current github repository for eggs: [https://github.com/pelican-eggs](https://github.com/pelican-eggs)
 
-#### 6.2 Setup New Ingress Rules for New Ports and Configure Caddy and UFW to use them:
+#### 6.2 Setup New Ingress Rules for New Ports inn Oracel Cloud and Configure Caddy and UFW/Iptables to use them:
 
 ```bash
 ufw allow 16261 && ufw allow 16262
@@ -298,5 +298,62 @@ Below is how the complete config would look like:
     }
 }
 ```
+ARK Survival Evolved:
+#### 6.2 Setup New Ingress Rules for New Ports inn Oracel Cloud and Configure Caddy and UFW/Iptables to use them:
+
+```bash
+ufw allow 7777 && ufw allow 7778 && ufw allow 27015 && ufw allow 27020
+nano /etc/caddy/Caddyfile
+```
+
+Below is how the complete config would look like:
+
+```
+{
+    layer4 {
+        :25565 {
+            route {
+                proxy {
+                    upstream 10.66.66.2:25565
+                }
+            }
+        }
+        
+        udp/:7777 {
+            route {
+                proxy {
+                    upstream udp/10.66.66.2:7777
+                }
+            }
+        }
+        
+        udp/:7778 {
+            route {
+                proxy {
+                    upstream udp/10.66.66.2:7778
+                }
+            }
+        }
+        
+        udp/:27015 {
+            route {
+                proxy {
+                    upstream udp/10.66.66.2:27015
+                }
+            }
+        }
+        
+        :27020 {
+            route {
+                proxy {
+                    upstream 10.66.66.2:27020
+                }
+            }
+        }
+    }
+}
+```
+
+
 
 Finally, reboot both machines once again.
