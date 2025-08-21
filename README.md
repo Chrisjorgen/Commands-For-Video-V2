@@ -298,8 +298,13 @@ Below is how the complete config would look like:
     }
 }
 ```
-ARK Survival Evolved:
-#### 6.2 Setup New Ingress Rules for New Ports inn Oracel Cloud and Configure Caddy and UFW/Iptables to use them:
+### ARK Survival Evolved:
+#### 7.1 Setup New Ingress Rules for New Ports inn Oracel Cloud and Configure Caddy and UFW/Iptables to use them:
+
+#### 7.2 Download and Add new eggs
+
+Current github repository for eggs: [https://github.com/pelican-eggs](https://github.com/pelican-eggs)
+
 
 ```bash
 ufw allow 7777 && ufw allow 7778 && ufw allow 27015 && ufw allow 27020
