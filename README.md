@@ -27,6 +27,11 @@ sudo apt update -y && sudo apt upgrade -y
 ```
 #### Add php8.4 repository
 
+#### Use Guide
+```bash
+https://php.watch/articles/php-8-5-installation-upgrade-guide-debian-ubuntu
+```
+
 ##### Ubuntu
 ```bash
 sudo LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php 
