@@ -1,6 +1,9 @@
 # DIY Game Server Setup
 A comprehensive guide for setting up a DIY Game Server using Pelican Panel with Oracle Cloud and Cloudflare.
 
+https://www.youtube.com/watch?v=bz81P6OznYs&list=PLTQdsC0mfobzA1RXdnMCF7FUyWIUWO7pF&index=5&t=2431s
+
+
 ## 📋 Prerequisites
 
 - A server to install the panel on
@@ -205,25 +208,47 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl enable wg-quick@wg0.service
 sudo systemctl start wg-quick@wg0.service
+```
+```bash
 sudo systemctl status wg-quick@wg0.service
 ```
 
 #### 5.2 Making Certificates for Panel
 ```bash
 sudo apt install -y python3-certbot-nginx
-sudo certbot -d example.com --manual --preferred-challenges dns certonly
-sudo crontab -e
-0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx"
+sudo certbot -d example.com --manual --preferred-challenges dns certonly # Add/edit Domene name
+```
+```bash
+# Copy Config  
+# 0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx"
+
+sudo crontab -e # Select 1 and past in config at botom 
 ```
 
 #### 5.3 Installing Pelican Panel
 
 This step requires you to follow the documentation here: [https://pelican.dev/docs](https://pelican.dev/docs) along with the video.
 
+#### 5.3.1 Feil med nginx
+
+Åpne filen: /etc/nginx/sites-available/pelican.conf
+Fjern eller kommenter ut: # server_tokens off;
+
+```bash
+sudo nano /etc/nginx/sites-available/pelican.conf
+# server_tokens off;
+```
+
 #### 5.4 Setup Cloudflare Tunnel
 
 Use sudo with the curl command given in the Cloudflare Dashboard `sudo curl -L --output cloudflared.dev [...]`
 Origin Server Name is the domain you used to make the certificates in #5.2
+
+### 5.4.1 Cloudflare Tunnel down
+
+Run 3 command form Cloudflard Tunnel installer agen.
+
+cloudflared tunnel run --token [...]
 
 #### 5.5 Reboot both Machines to Apply Pending Configurations
 ```bash
